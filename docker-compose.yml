@@ -1,0 +1,13 @@
+services:
+  flask-app:
+    build: .
+    ports:
+      - "5002:5002"
+    volumes:
+      - .:/app
+    environment:
+      FLASK_APP: main.py
+      FLASK_RUN_HOST: 0.0.0.0
+      FLASK_ENV: development
+      FLASK_RUN_PORT: 5002
+    command: flask run
