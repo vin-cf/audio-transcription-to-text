@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transcription Result</title>
+  <link href="{{ url_for('static', filename='css/materialize.min.css') }}" rel="stylesheet">
+  <style>
+    body {
+      background-color: #e0f7fa;
+    }
+    .container {
+      margin-top: 50px;
+    }
+    .btn-custom {
+      background-color: #ec407a !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="center-align">Transcription Result</h1>
+    <div class="input-field">
+      <textarea id="transcription" class="materialize-textarea" rows="10">{{ transcription }}</textarea>
+      <label for="transcription">Transcription</label>
+    </div>
+    <div class="center-align">
+      <button class="btn btn-custom" onclick="copyToClipboard()">Copy to Clipboard</button>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/materialize.min.js') }}"></script>
+  <script>
+    function copyToClipboard() {
+      var copyText = document.getElementById("transcription");
+      copyText.select();
+      copyText.setSelectionRange(0, 99999); /* For mobile devices */
+      document.execCommand("copy");
+      M.toast({html: 'Copied to clipboard!'});
+    }
+  </script>
+</body>
+</html>
