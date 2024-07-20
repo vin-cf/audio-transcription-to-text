@@ -33,7 +33,7 @@ def load_audio(file_path: str) -> dict:
     return {'array': waveform.numpy(), 'sampling_rate': sample_rate}
 
 
-def process_file(file_path: str, model_id: str) -> str:
+def process_file(file_path: str, model_id: str, retry: bool = True) -> str:
     try:
         # Check if CUDA is available and set the device and torch_dtype accordingly
         device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
@@ -76,8 +76,10 @@ def process_file(file_path: str, model_id: str) -> str:
             # Handle error case appropriately
             return 'Error: Invalid result from pipeline'
     except torch.cuda.OutOfMemoryError:
-        torch.cuda.empty_cache()
-        return 'CUDA out of memory. Please try again.'
+        if retry:
+            torch.cuda.empty_cache()
+            print('CUDA out of memory. Trying again.')
+            process_file(file_path, model_id, False)
 
 
 @app.route('/')
