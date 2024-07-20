@@ -21,17 +21,15 @@ models = [
 
 
 def load_audio(file_path: str) -> dict:
-    # Load the audio file with torchaudio, ensuring only the left channel is returned
-    # to handle the following error from pipeline()
-    # ValueError: We expect a single channel audio input for AutomaticSpeechRecognitionPipeline
+    """
+    Load the audio file with torchaudio, ensuring only the left channel is returned
+    to handle the following error from pipeline()
+    ValueError: We expect a single channel audio input for AutomaticSpeechRecognitionPipeline
+    @param file_path:
+    @return:
+    """
     waveform, sample_rate = torchaudio.load(file_path)
-
-    # Extract the left channel if stereo
-    if _is_stereo(file_path):
-        waveform = waveform[0]
-    else:
-        waveform = waveform.squeeze()
-
+    waveform = waveform[0] if _is_stereo(file_path) else waveform.squeeze()
     return {'array': waveform.numpy(), 'sampling_rate': sample_rate}
 
 
