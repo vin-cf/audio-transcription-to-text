@@ -8,7 +8,9 @@ Install Dependencies: This command will create a virtual environment and install
 make install
 ```
 
-Run the Application:
+## Running the application
+
+Run the main.py file, this will spin up a Flask app on localhost port 5002
 
 # Style
 https://lospec.com/palette-list/shadow-violet
