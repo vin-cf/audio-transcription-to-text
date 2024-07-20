@@ -32,19 +32,14 @@ def load_audio(file_path: str) -> dict:
     else:
         waveform = waveform.squeeze()
 
-    return {"array": waveform.numpy(), "sampling_rate": sample_rate}
+    return {'array': waveform.numpy(), 'sampling_rate': sample_rate}
 
 
 def process_file(file_path: str, model_id: str) -> str:
     try:
         # Check if CUDA is available and set the device and torch_dtype accordingly
-        device = "cuda:0" if torch.cuda.is_available() else "cpu"
+        device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
-
-        # Use a smaller model
-        # model_id = "openai/whisper-base"
-        # model_id = "openai/whisper-large-v3"
-        # model_id = "facebook/mms-1b-all"
 
         # Load the model with the specified parameters
         model = AutoModelForSpeechSeq2Seq.from_pretrained(
@@ -62,7 +57,7 @@ def process_file(file_path: str, model_id: str) -> str:
 
         # Create the pipeline
         pipe: Pipeline = pipeline(
-            "automatic-speech-recognition",
+            'automatic-speech-recognition',
             model=model,
             tokenizer=processor.tokenizer,
             feature_extractor=processor.feature_extractor,
@@ -77,14 +72,14 @@ def process_file(file_path: str, model_id: str) -> str:
         # Run the pipeline on the loaded audio sample
         result = pipe(sample)  # Explicitly annotate the result as a dictionary
         if isinstance(result, dict):
-            transcription = result["text"]
+            transcription = result['text']
             return render_template('result.html', transcription=transcription)
         else:
             # Handle error case appropriately
-            return "Error: Invalid result from pipeline"
+            return 'Error: Invalid result from pipeline'
     except torch.cuda.OutOfMemoryError:
         torch.cuda.empty_cache()
-        return "CUDA out of memory. Please try again."
+        return 'CUDA out of memory. Please try again.'
 
 
 @app.route('/')
@@ -113,13 +108,17 @@ def upload_file():
     return f'Transcription: {transcription}'
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
     app.run(host='0.0.0.0', port=5002, debug=True)
 
 
 def _is_stereo(file_path) -> bool:
-    # Return true if the audio file is stereo, i.e. has more than one channel
+    """
+    Return true if the file has more than one channel
+    @param file_path:
+    @return: bool
+    """
     return torchaudio.info(file_path).num_channels > 1
 
