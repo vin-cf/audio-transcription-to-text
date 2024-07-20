@@ -1,18 +1,16 @@
 # Use an official Python runtime as a parent image
-FROM python:3.12-slim as build
+FROM python:3.12-slim AS build
 
 # Set the working directory in the container
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install --user -r requirements.txt
-
+COPY pyproject.toml pyproject.toml
 COPY . .
+RUN python -m venv /.venv
+RUN /.venv/bin/python -m pip install -U setuptools wheel
+RUN /.venv/bin/pip install -q .
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code to the container
-COPY . /app
+RUN /.venv/bin/pip install .
 
 # Stage 2: Runtime
 # slim, not alpine is necessary for shared libraries libgcc_s.so.1, ld-linux-x86-64.so.2
@@ -22,10 +20,13 @@ EXPOSE 5002
 
 WORKDIR /app
 
-# Copy dependencies and application code from the build stage
-COPY --from=build /root/.local /root/.local
-COPY --from=build /app /app
+# TODO: Copy offline transformer models
 
-ENV PATH=/root/.local/bin:$PATH
+# Copy dependencies and application code from the build stage
+#COPY --from=build /root/.local /root/.local
+COPY --from=build /app /app
+COPY --from=build /.venv /.venv
+
+ENV PATH=/.venv/bin:$PATH
 
 CMD ["python", "main.py"]

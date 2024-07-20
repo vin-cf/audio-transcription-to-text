@@ -12,5 +12,13 @@ make install
 
 Run the main.py file, this will spin up a Flask app on localhost port 5002
 
+## Docker
+```
+$ docker build . -t audio-to-text:local
+$ docker run audio-to-text:local
+```
+
 # Style
 https://lospec.com/palette-list/shadow-violet
+
+

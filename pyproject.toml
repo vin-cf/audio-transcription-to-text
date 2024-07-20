@@ -1,5 +1,5 @@
 [project]
-name = 'audio to text'
+name = 'audio-to-text'
 description = 'Web application converting audio files to their textual representation'
 version = '0.0.1'
 readme = 'README.md'
