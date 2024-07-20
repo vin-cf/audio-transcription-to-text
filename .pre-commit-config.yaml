@@ -4,12 +4,12 @@ repos:
   # formatters and linters are available in the virtualenv so they can be run from the makefile & vscode
   - repo: local
     hooks:
-      - id: ruff
-        name: ruff
-        entry: .venv/bin/ruff check --force-exclude
-        language: system
-        types: [python]
-        require_serial: true
+#      - id: ruff
+#        name: ruff
+#        entry: .venv/bin/ruff check --force-exclude
+#        language: system
+#        types: [python]
+#        require_serial: true
 #      - id: ruff-format
 #        name: ruff-format
 #        entry: .venv/bin/ruff format

@@ -1,10 +1,13 @@
-from flask import Flask, request, render_template
-from werkzeug.utils import secure_filename
 import os
+
 from dotenv import load_dotenv
+from flask import Flask, request, render_template
 import torch
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 import torchaudio
+
+from utils import audio, files
+
 
 load_dotenv()
 
@@ -29,7 +32,7 @@ def load_audio(file_path: str) -> dict:
     @return:
     """
     waveform, sample_rate = torchaudio.load(file_path)
-    waveform = waveform[0] if _is_stereo(file_path) else waveform.squeeze()
+    waveform = waveform[0] if audio._is_stereo(file_path) else waveform.squeeze()
     return {'array': waveform.numpy(), 'sampling_rate': sample_rate}
 
 
@@ -63,7 +66,6 @@ def process_file(file_path: str, model_id: str, retry: bool = True) -> str:
             torch_dtype=torch_dtype,
             device=device,
         )
-        from typing import Dict, Any
 
         # Load the audio file
         sample = load_audio(file_path)
@@ -79,7 +81,9 @@ def process_file(file_path: str, model_id: str, retry: bool = True) -> str:
         if retry:
             torch.cuda.empty_cache()
             print('CUDA out of memory. Trying again.')
-            process_file(file_path, model_id, False)
+            return process_file(file_path, model_id, False)
+        else:
+            return 'Out of memory error despite clearing cuda cache'
 
 
 @app.route('/')
@@ -95,7 +99,7 @@ def upload_file():
     model_id = request.form['model']
     if not file.filename:
         return 'No selected file'
-    filename = secure_filename(file.filename)
+    filename = files.generate_secure_filename(file.filename)
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
     if os.path.exists(file_path):
@@ -121,4 +125,3 @@ def _is_stereo(file_path) -> bool:
     @return: bool
     """
     return torchaudio.info(file_path).num_channels > 1
-
