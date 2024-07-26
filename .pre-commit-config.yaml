@@ -10,12 +10,12 @@ repos:
 #        language: system
 #        types: [python]
 #        require_serial: true
-#      - id: ruff-format
-#        name: ruff-format
-#        entry: .venv/bin/ruff format
-#        language: system
-#        types: [python]
-#        require_serial: true
+      - id: ruff-format
+        name: ruff-format
+        entry: .venv/bin/ruff format
+        language: system
+        types: [python]
+        require_serial: true
       - id: pyright
         name: pyright
         entry: node_modules/.bin/pyright

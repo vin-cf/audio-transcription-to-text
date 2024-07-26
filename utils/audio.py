@@ -8,4 +8,3 @@ def _is_stereo(file_path) -> bool:
     @return: bool
     """
     return torchaudio.info(file_path).num_channels > 1
-

@@ -36,8 +36,6 @@ def generate_secure_filename(filename: str) -> str:
     for sep in os.sep, os.path.altsep:
         if sep:
             filename = filename.replace(sep, " ")
-    filename = str(re.compile(r"[^A-Za-z0-9_.-]").sub("", "_".join(filename.split()))).strip(
-        "._"
-    )
+    filename = str(re.compile(r"[^A-Za-z0-9_.-]").sub("", "_".join(filename.split()))).strip("._")
 
     return filename
