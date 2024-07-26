@@ -1,4 +1,7 @@
 .env
 .idea
-venv
+.venv
 uploads
+node_modules
+audio_to_text.egg-info/
+__pycache__/
