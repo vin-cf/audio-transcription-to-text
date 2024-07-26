@@ -1,7 +1,7 @@
 import torchaudio
 
 
-def _is_stereo(file_path) -> bool:
+def is_stereo(file_path: str) -> bool:
     """
     Return true if the file has more than one channel
     @param file_path:

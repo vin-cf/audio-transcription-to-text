@@ -1,13 +1,12 @@
 import os
 
-from dotenv import load_dotenv
-from flask import Flask, request, render_template
 import torch
-from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 import torchaudio
+from dotenv import load_dotenv
+from flask import Flask, render_template, request
+from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 
 from utils import audio, files
-
 
 load_dotenv()
 
@@ -29,7 +28,7 @@ def load_audio(file_path: str) -> dict:
     @return:
     """
     waveform, sample_rate = torchaudio.load(file_path)
-    waveform = waveform[0] if audio._is_stereo(file_path) else waveform.squeeze()
+    waveform = waveform[0] if audio.is_stereo(file_path) else waveform.squeeze()
     return {"array": waveform.numpy(), "sampling_rate": sample_rate}
 
 
@@ -81,12 +80,12 @@ def process_file(file_path: str, model_id: str, retry: bool = True) -> str:
 
 
 @app.route("/")
-def upload_form():
+def upload_form() -> str:
     return render_template("upload.html", models=models)
 
 
 @app.route("/", methods=["POST"])
-def upload_file():
+def upload_file() -> str:
     if "file" not in request.files or "model" not in request.form:
         return "No file or model selected"
     file = request.files["file"]
@@ -110,12 +109,3 @@ if __name__ == "__main__":
     if not os.path.exists(app.config["UPLOAD_FOLDER"]):
         os.makedirs(app.config["UPLOAD_FOLDER"])
     app.run(host="0.0.0.0", port=5002, debug=True)
-
-
-def _is_stereo(file_path) -> bool:
-    """
-    Return true if the file has more than one channel
-    @param file_path:
-    @return: bool
-    """
-    return torchaudio.info(file_path).num_channels > 1
